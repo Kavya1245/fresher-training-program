@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kanban Board - Requirement Gathering Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f4f5f7; margin: 0; padding: 30px; }
+  h2 { text-align: center; color: #333; }
+  p.sub { text-align: center; color: #666; margin-bottom: 30px; }
+  .board { display: flex; gap: 20px; max-width: 1000px; margin: 0 auto; }
+  .column { background: #ebecf0; border-radius: 8px; padding: 12px; flex: 1; min-height: 400px; }
+  .column h3 { text-align: center; color: #444; }
+  .card {
+    background: white; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); cursor: grab; font-size: 14px;
+  }
+  .card.must { border-left: 4px solid #d32f2f; }
+  .card.should { border-left: 4px solid #f9a825; }
+  .card.could { border-left: 4px solid #388e3c; }
+  .tag { font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px; }
+  .must .tag { color: #d32f2f; }
+  .should .tag { color: #f9a825; }
+  .could .tag { color: #388e3c; }
+  .card.dragging { opacity: 0.5; }
+  .column.drag-over { background: #dcdfe4; }
+</style>
+</head>
+<body>
+
+<h2>Task Manager App – Backlog Board</h2>
+<p class="sub">Drag cards between columns to simulate how requirements move from gathering → progress → done</p>
+
+<div class="board">
+  <div class="column" id="todo">
+    <h3>To Do</h3>
+    <div class="card must" draggable="true"><span class="tag">MUST HAVE</span>User Registration</div>
+    <div class="card must" draggable="true"><span class="tag">MUST HAVE</span>Add a Task</div>
+    <div class="card should" draggable="true"><span class="tag">SHOULD HAVE</span>Edit a Task</div>
+    <div class="card should" draggable="true"><span class="tag">SHOULD HAVE</span>Delete a Task</div>
+    <div class="card could" draggable="true"><span class="tag">COULD HAVE</span>Task Due Dates</div>
+  </div>
+
+  <div class="column" id="inprogress">
+    <h3>In Progress</h3>
+  </div>
+
+  <div class="column" id="done">
+    <h3>Done</h3>
+    <div class="card must" draggable="true"><span class="tag">MUST HAVE</span>Mark Task as Complete</div>
+  </div>
+</div>
+
+<script>
+let draggedCard = null;
+
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('dragstart', () => {
+    draggedCard = card;
+    card.classList.add('dragging');
+  });
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
+  });
+});
+
+document.querySelectorAll('.column').forEach(column => {
+  column.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    column.classList.add('drag-over');
+  });
+  column.addEventListener('dragleave', () => {
+    column.classList.remove('drag-over');
+  });
+  column.addEventListener('drop', () => {
+    column.classList.remove('drag-over');
+    if (draggedCard) column.appendChild(draggedCard);
+  });
+});
+</script>
+
+</body>
+</html>
