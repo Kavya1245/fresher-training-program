@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>3-Tier Architecture Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; }
+  input, button { padding: 8px; margin: 6px 0; width: 100%; box-sizing: border-box; }
+  #result { margin-top: 15px; padding: 10px; border-radius: 6px; }
+  .success { background: #d4edda; color: #155724; }
+  .error { background: #f8d7da; color: #721c24; }
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+</style>
+</head>
+<body>
+  <h2>User Registration (3-Tier Demo)</h2>
+  <p>This form is the <b>Presentation Layer</b>. It sends data to the <b>Business Layer</b> (server.js), which validates it and saves it to the <b>Storage Layer</b> (data.json).</p>
+
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Full Name" required>
+    <input type="email" id="email" placeholder="Email Address" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="result"></div>
+
+  <h3>Stored Records (from Storage Layer)</h3>
+  <table id="recordsTable">
+    <thead><tr><th>Name</th><th>Email</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+<script>
+const form = document.getElementById('userForm');
+const resultDiv = document.getElementById('result');
+const tableBody = document.querySelector('#recordsTable tbody');
+
+async function loadRecords() {
+  const res = await fetch('/data');
+  const records = await res.json();
+  tableBody.innerHTML = '';
+  records.forEach(r => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${r.name}</td><td>${r.email}</td>`;
+    tableBody.appendChild(row);
+  });
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+
+  const res = await fetch('/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email })
+  });
+  const data = await res.json();
+
+  resultDiv.textContent = data.message;
+  resultDiv.className = data.success ? 'success' : 'error';
+
+  if (data.success) {
+    form.reset();
+    loadRecords();
+  }
+});
+
+loadRecords();
+</script>
+</body>
+</html>
